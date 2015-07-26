@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>AdminLTE 2 | Dashboard</title>
+     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
+    <script src="plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="dist/js/app.min.js" type="text/javascript"></script>
+    <script src="plugins/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="plugins/angular/angular.min.js" type="text/javascript"></script>
+    <script src="plugins/datatables/angular-datatables.min.js" type="text/javascript"></script>
+    <script src="plugins/datatables/dataTables.bootstrap.min.js" type="text/javascript"></script>
+     <script src="plugins/chartjs/Chart.min.js" type="text/javascript"></script>
+    <link href="plugins/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+     <script type="text/javascript">
+     // var oTable = $('#orderDetails').DataTable();
+      var app = angular.module('MyApp', ['datatables']);
+       var req = {
+              method: "GET",
+              url: "https://localhost:8443/InLog/api/v1/getAllOrder",
+              dataType : "JSON",
+              headers :{
+               "X-AUTH-HEADER" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXl1cjEyMyJ9.WR2bVaH7tk-dQqUIDXibk_p2StF-nCY38zEzviXIL10",
+                "X-AUTH-USER-HEADER" : "mayur123"
+              }
+            };
+        var emailReq = {
+              method: "GET",
+              url: "https://localhost:8443/InLog/api/v1/getMails",
+              dataType : "JSON",
+              headers :{
+               "X-AUTH-HEADER" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXl1cjEyMyJ9.WR2bVaH7tk-dQqUIDXibk_p2StF-nCY38zEzviXIL10",
+                "X-AUTH-USER-HEADER" : "mayur123"
+              }
+            };
+         var orderGraphReq = {
+              method: "GET",
+              url: "https://localhost:8443/InLog/api/v1/getOrderDataForGraph",
+              dataType : "JSON",
+              headers :{
+               "X-AUTH-HEADER" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXl1cjEyMyJ9.WR2bVaH7tk-dQqUIDXibk_p2StF-nCY38zEzviXIL10",
+                "X-AUTH-USER-HEADER" : "mayur123"
+              }
+            };
+
+        function createChart(orderData,cancelledOrderData){
+           var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
+          
+          // This will get the first returned node in the jQuery collection.
+          var areaChart = new Chart(areaChartCanvas);
+
+          var areaChartData = {
+            labels: ["January", "February", "March", "April", "May", "June", "July" ,"August","September","October" ,"November","December"],
+            datasets: [
+              {
+                label: "Electronics",
+                fillColor: "rgba(210, 214, 222, 1)",
+                strokeColor: "rgba(210, 214, 222, 1)",
+                pointColor: "rgba(210, 214, 222, 1)",
+                pointStrokeColor: "#c1c7d1",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: orderData
+              },
+              {
+                label: "Digital Goods",
+                fillColor: "rgba(60,141,188,0.9)",
+                strokeColor: "rgba(60,141,188,0.8)",
+                pointColor: "#3b8bba",
+                pointStrokeColor: "rgba(60,141,188,1)",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(60,141,188,1)",
+                data: cancelledOrderData
+              }
+            ]
+          };
+
+
+          var areaChartOptions = {
+            //Boolean - If we should show the scale at all
+            showScale: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: false,
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,.05)",
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+            //Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines: true,
+            //Boolean - Whether the line is curved between points
+            bezierCurve: true,
+            //Number - Tension of the bezier curve between points
+            bezierCurveTension: 0.3,
+            //Boolean - Whether to show a dot for each point
+            pointDot: false,
+            //Number - Radius of each point dot in pixels
+            pointDotRadius: 4,
+            //Number - Pixel width of point dot stroke
+            pointDotStrokeWidth: 1,
+            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius: 20,
+            //Boolean - Whether to show a stroke for datasets
+            datasetStroke: true,
+            //Number - Pixel width of dataset stroke
+            datasetStrokeWidth: 2,
+            //Boolean - Whether to fill the dataset with a color
+            datasetFill: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
+            //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+            maintainAspectRatio: false,
+            //Boolean - whether to make the chart responsive to window resizing
+            responsive: true
+          };
+
+          //Create the line chart
+          areaChart.Line(areaChartData, areaChartOptions);
+        }
+
+              
+      app.controller('mycontroller', function($scope,$http) {
+          $scope.orderAjax = true;
+          $scope.displayOrder = true;
+          $scope.user = jQuery.parseJSON(localStorage["user"]);
+          $scope.showEmail = function(){
+            $scope.displayOrder = false;
+            $scope.displayEmails = true;
+          };
+          $scope.showOrder = function(){
+            $scope.displayOrder = true;
+            $scope.displayEmails = false;
+          };
+
+          $http(req).success(function(resp){
+            if(resp.length >1 ) {
+              $scope.orders = resp;
+              $scope.orderCount = resp.length;
+              $scope.orderAjax = false;
+            }
+          }).error(function(){$scope.orderAjax = false;});
+          
+          $http(emailReq).success(function(resp){
+            if(resp.length >1 ) {
+              $scope.emails = resp;
+              $scope.emailCount = resp.length;
+            }
+          }).error(function(){});
+
+          $http(orderGraphReq).success(function(resp){
+            var ordData = [0,0,0,0,0,0,0,0,0,0,0,0],cancelOrdData = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+            
+            $.each(resp, function(index) {
+              ordData[parseInt(resp[index].id)]  = resp[index].dataCount;
+            });
+
+            createChart(ordData,cancelOrdData);
+          }).error(function(){});
+      });
+
+
+    </script>
+    <style type="text/css">
+
+      /* when showing the picture */
+      .ng-hide-remove      { animation:0.5s flipInX ease; }
+
+      /* ANIMATIONS (FROM ANIMATE.CSS) ======================== */
+      /* flip in */
+      @keyframes flipInX {
+        0% {
+          transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+          transition-timing-function: ease-in;
+          opacity: 0;
+        }
+
+        40% {
+          transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+          transition-timing-function: ease-in;
+          transition-timing-function: ease-in;
+        }
+
+        60% {
+          transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+          opacity: 1;
+        }
+
+        80% {
+          transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+          transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+        }
+
+        100% {
+          transform: perspective(400px);
+          transform: perspective(400px);
+          transform: perspective(400px);
+        }
+      }
+    </style>
+  </head>
+  <body class="skin-blue sidebar-mini" ng-app="MyApp">
+    <div class="wrapper" ng-controller="mycontroller">
+      
+      <header class="main-header">
+        <!-- Logo -->
+        <a href="index2.html" class="logo">
+          <!-- mini logo for sidebar mini 50x50 pixels -->
+          <span class="logo-mini"><b>In</b>Log</span>
+          <!-- logo for regular state and mobile devices -->
+          <span class="logo-lg"><b>In</b>log</span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+            <li class="dropdown messages-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">{{emailCount}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have {{emailCount}} messages</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li ng-repeat="email in emails">
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"/>
+                          </div>
+                          <h4>
+                            {{email.subject}}
+                            <small><i class="fa fa-clock-o"></i>{{email.createdAt | date}}</small>
+                          </h4>
+                          <p>{{email.fromEmail}}</p>
+                        </a>
+                      </li><!-- end message -->
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#" ng-click="showEmail()">See All Messages</a></li>
+                </ul>
+              </li>
+              <!-- Notifications: style can be found in dropdown.less -->
+              <li class="dropdown notifications-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bell-o"></i>
+                  <span class="label label-warning">10</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 notifications</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-bar-chart text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the page and may cause design problems
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-red"></i> 5 new members joined
+                        </a>
+                      </li>
+
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-user text-red"></i> You changed your username
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#">View all</a></li>
+                </ul>
+              </li>
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src="dist/img/avatar2.png" class="user-image" alt="User Image"/>
+                  <span class="hidden-xs">{{user.username}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                    <img src="dist/img/avatar2.png" class="img-circle" alt="User Image" />
+                    <p>
+                      {{user.username}}
+                      <small>{{user.userRole}}</small>
+                    </p>
+                  </li>
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-right">
+                      <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <!-- Control Sidebar Toggle Button -->
+              <li>
+                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+          <!-- Sidebar user panel -->
+          <div class="user-panel">
+            <div class="pull-left image">
+              <img src="dist/img/avatar.png" class="img-circle" alt="User Image" />
+            </div>
+            <div class="pull-left info">
+              <p>{{user.username}}</p>
+
+              <a href="#"><i class="fa fa-circle text-success"></i> Active</a>
+            </div>
+          </div>
+          <!-- sidebar menu: : style can be found in sidebar.less -->
+          <ul class="sidebar-menu">
+            <li class="header">Search By Item</li>
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+          <div class="row">
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-aqua">
+                <div class="inner">
+                  <h3>{{orderCount}}</h3>
+                  <p>New Orders</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-bag"></i>
+                </div>
+                <a href="#" ng-click="showOrder()"class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+              </div>
+            </div><!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-green">
+                <div class="inner">
+                  <h3>53<sup style="font-size: 20px">%</sup></h3>
+                  <p>Bounce Rate</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+              </div>
+            </div><!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-yellow">
+                <div class="inner">
+                  <h3>44</h3>
+                  <p>User Registrations</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-person-add"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+              </div>
+            </div><!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-red">
+                <div class="inner">
+                  <h3>65</h3>
+                  <p>Unique Visitors</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-pie-graph"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+              </div>
+            </div><!-- ./col -->
+          </div><!-- /.row -->
+          <div class="row ng-hide-remove" ng-show="displayOrder">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">New Orderss</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                  <div class="overlay" ng-show="orderAjax">
+                    <i class="fa fa-refresh fa-spin"></i>
+                  </div>
+                  <table id="orderDetails" datatable="ng" class="table table-bordered table-hover" ng-hide="orderAjax">
+                    <thead>
+                      <tr>
+                        <th>Order Id</th>
+                        <th>Progress</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="order in orders"  ng-if="orders.length > 1">
+                        <td>{{order.id}}</td>
+                        <td>{{order.orderSatus}}
+                          <div class="progress progress-xs">
+                            <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+           <div class="row ng-hide-remove" ng-show="displayEmails">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Emails</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                  <table id="emailDetails" datatable="ng" class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th>From Email</th>
+                        <th>Subject</th>
+                        <th>Body</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="email in emails"  ng-if="emails.length > 1">
+                        <td>{{email.fromEmail}}</td>
+                        <td>{{email.subject}}</td>
+                        <td>{{email.body}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <!-- AREA CHART -->
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Area Chart</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="chart">
+                    <canvas id="areaChart" height="250"></canvas>
+                  </div>
+                </div><!-- /.box-body -->
+              </div><!-- /.box -->
+            </div>
+          </div>
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
+      <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+          <b>Version</b> 2.0
+        </div>
+        <strong>Copyright &copy;</strong>
+      </footer>
+      
+      <!-- Control Sidebar -->      
+      <aside class="control-sidebar control-sidebar-dark">                
+        <!-- Create the tabs -->
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+          <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+          <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa  fa-gears text-red"></i></a></li>
+          <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+        </ul>
+        <div class="tab-content">
+          <!-- Home tab content -->
+          <div class="tab-pane" id="control-sidebar-home-tab">
+            <h3 class="control-sidebar-heading">Recent Activity</h3>
+
+            <h3 class="control-sidebar-heading">Tasks Progress</h3>  
+
+          </div>
+        </div>
+      </aside>
+      <div class='control-sidebar-bg'></div>
+    </div>
+  </body>
+</html>
